@@ -1,0 +1,1 @@
+import{i as r,l as a,j as t}from"./index-DmmLrvYi.js";var e={},o=a;Object.defineProperty(e,"__esModule",{value:!0});var u=e.default=void 0,s=o(r()),i=t;u=e.default=(0,s.default)((0,i.jsx)("path",{d:"M11.67 3.87 9.9 2.1 0 12l9.9 9.9 1.77-1.77L3.54 12z"}),"ArrowBackIos");export{u as d};
