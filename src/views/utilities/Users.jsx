@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import the hook for navigation
+import { useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -37,27 +37,32 @@ const UserTable = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const { data: countData, error: countError } = await supabase
+        // Fetch total user count
+        const { count, error: countError } = await supabase
           .from('auth')
           .select('id', { count: 'exact' });
         if (countError) throw countError;
-        setTotalUsers(countData.length);
+        setTotalUsers(count);
 
-        const { data, error } = await supabase
-          .from('auth')
+        // Fetch paginated user data with profile score
+        const { data: userData, error: userError } = await supabase
+          .from('profile') // Fetch from profile table
           .select(`
-            id, fname, lname, email, role,
-            profile!inner(score)
+            auth_id,
+            score,
+            auth!inner(id, fname, lname, email, role)
           `)
           .range((page - 1) * usersPerPage, page * usersPerPage - 1);
 
-        if (error) throw error;
+        if (userError) throw userError;
 
-        setUsers(data.map(user => ({
-          ...user,
-          name: `${user.fname} ${user.lname}`,
-          score: user.profile?.score || 'N/A',
-        })));
+        // Format the users with their profile scores
+        const formattedUsers = userData.map(profile => ({
+          ...profile.auth, // Extract fields from auth
+          score: profile.score || '0',
+        }));
+
+        setUsers(formattedUsers);
       } catch (error) {
         console.error('Error fetching users:', error.message);
       } finally {
@@ -117,11 +122,17 @@ const UserTable = () => {
     setSnackbarOpen(false);
   };
 
+  const getScoreColor = (score) => {
+    if (score > 80) return 'green';
+    if (score >= 60) return '#FFA500';
+    return 'red';
+  };
+
   return (
     <MainCard title="User List" secondary={<SecondaryAction link="https://next.material-ui.com/components/tables/" />}>
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} >
             <Table aria-label="simple table">
               <TableHead>
                 <TableRow>
@@ -153,9 +164,7 @@ const UserTable = () => {
                     </TableSortLabel>
                   </TableCell>
                   <TableCell>
-                    <TableSortLabel>
-                      Action
-                    </TableSortLabel>
+                    Action
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -164,7 +173,9 @@ const UserTable = () => {
                   <TableRow key={user.id}>
                     <TableCell>{user.fname} {user.lname}</TableCell>
                     <TableCell>{user.email}</TableCell>
-                    <TableCell>{user.score}</TableCell>
+                    <TableCell style={{ color: getScoreColor(user.score) }}>
+                      {user.score} %
+                    </TableCell>
                     <TableCell>
                       <Button 
                         variant="contained" 

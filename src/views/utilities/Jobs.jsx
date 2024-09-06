@@ -23,7 +23,7 @@ const Jobs = () => {
       try {
         const { data, error } = await supabase
           .from('category')
-          .select('id, job_name, job_desc, job_req'); // Ensure id is fetched
+          .select('id, job_name, job_desc, job_req, is_active'); // Fetching is_active field
 
         if (error) throw error;
 

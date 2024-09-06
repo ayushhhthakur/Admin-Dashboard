@@ -102,7 +102,7 @@ const UserProfile = () => {
                             <Typography variant="body1"> <strong>Experience:</strong> {userProfile?.longevityInYears ? `${userProfile.longevityInYears} + Years` : 'No experience information available.'} </Typography>
                             <Typography variant="body1" sx={{ mt: 2 }}><strong>About Me:</strong> {userProfile?.bio || 'No bio available.'}</Typography>
                             <Typography variant="body1" sx={{ mt: 2 }}><strong>Education:</strong> {userProfile?.highest_education || 'No education details available.'}</Typography>
-                            <Typography variant="body1" sx={{ mt: 2 }}><strong>Experience:</strong> {userProfile?.max_exp || 'No experience details available.'}</Typography>
+                            <Typography variant="body1" sx={{ mt: 2 }}><strong>Experience:</strong> {userProfile?.exp_new || 'No experience details available.'}</Typography>
                         </CardContent>
                     </Card>
                 </Grid>
